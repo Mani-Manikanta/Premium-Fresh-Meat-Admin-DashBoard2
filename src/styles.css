@@ -22,8 +22,8 @@ button, input, select { font: inherit; }
 button { cursor: pointer; }
 .muted { color: var(--muted); font-size: 13px; line-height: 1.65; }
 .eyebrow { color: #9392a5; font-size: 10px; font-weight: 700; letter-spacing: 1.55px; margin: 0 0 11px; }
-.brand-mark { width: 36px; height: 36px; display: inline-grid; place-items: center; border-radius: 12px; color: white; background: linear-gradient(145deg, #8d293d, #5d1021); box-shadow: 0 5px 12px #74182c36; font: 800 17px 'Manrope', sans-serif; }
-.brand-mark.small { width: 29px; height: 29px; border-radius: 9px; font-size: 14px; }
+.brand-logo { width: 36px; height: 36px; flex: 0 0 auto; display: block; border-radius: 12px; box-shadow: 0 5px 12px #74182c36; }
+.brand-logo.small { width: 29px; height: 29px; border-radius: 9px; }
 .button { min-height: 42px; border: 0; border-radius: 9px; padding: 0 17px; font-size: 12px; font-weight: 600; transition: background .15s, transform .15s; }
 .button:disabled { cursor: wait; opacity: .68; }
 .button.primary { background: var(--purple); color: white; box-shadow: 0 4px 10px #74182c2b; }
@@ -41,7 +41,7 @@ button { cursor: pointer; }
 .auth-intro::before, .auth-intro::after { content: ''; position: absolute; width: 440px; height: 440px; border: 1px solid #ffffff15; border-radius: 50%; pointer-events: none; }
 .auth-intro::before { top: -225px; right: -120px; box-shadow: 0 0 0 35px #ffffff08, 0 0 0 75px #ffffff07; }
 .auth-intro::after { bottom: -315px; left: -175px; box-shadow: 0 0 0 45px #ffffff08, 0 0 0 90px #ffffff06; }
-.auth-intro > .brand-mark { position: absolute; left: 12%; top: 52px; width: 42px; height: 42px; background: #ffffff21; box-shadow: none; }
+.auth-intro > .brand-logo { position: absolute; left: 12%; top: 52px; width: 42px; height: 42px; box-shadow: none; }
 .auth-intro .eyebrow { color: #f2cbd4; margin-top: 65px; }
 .auth-intro h1 { max-width: 470px; margin: 0; font: 700 clamp(38px, 4vw, 58px)/1.12 'Manrope', sans-serif; letter-spacing: -2px; }
 .auth-intro > p:not(.eyebrow) { max-width: 380px; color: #f4e1e5; font-size: 15px; line-height: 1.8; margin: 20px 0 35px; }
@@ -56,15 +56,11 @@ button { cursor: pointer; }
 .form-stack input, .form-stack select { width: 100%; height: 43px; border: 1px solid #e6e6ed; border-radius: 8px; outline: 0; background: #fff; padding: 0 12px; color: #303146; font-size: 12px; font-weight: 400; transition: border-color .15s, box-shadow .15s; }
 .form-stack input:focus, .form-stack select:focus { border-color: #b86a7a; box-shadow: 0 0 0 3px #74182c1a; }
 .field-hint { color: #999aad; font-size: 10px; font-weight: 400; }
-.switch-mode { margin: 22px 0 0; color: #9293a3; text-align: center; font-size: 11px; }
-.text-button { padding: 0; border: 0; background: none; color: var(--purple); font-size: inherit; font-weight: 700; }
-.text-button:hover { text-decoration: underline; }
 .auth-footer { margin-top: 65px; color: #afb0bd; font-size: 10px; }
 .mobile-brand { display: none; }
 
 .app-shell { min-height: 100vh; }
 .sidebar { position: fixed; inset: 0 auto 0 0; z-index: 3; width: 236px; display: flex; flex-direction: column; padding: 27px 17px 18px; background: #74182c; border-right: 1px solid #5d1021; }
-.sidebar .brand-mark { color: #74182c; background: #fff; box-shadow: none; }
 .brand { display: flex; align-items: center; gap: 10px; margin: 1px 5px 50px; color: #fff; text-decoration: none; font: 700 15px 'Manrope', sans-serif; letter-spacing: -.5px; }
 .brand-light { color: #edcbd3; font-weight: 500; }
 .nav-label { margin: 0 8px 12px; color: #e6bfc8; font-size: 9px; font-weight: 700; letter-spacing: 1.2px; }

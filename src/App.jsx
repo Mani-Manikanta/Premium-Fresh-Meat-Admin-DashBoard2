@@ -41,8 +41,7 @@ const detailSections = {
 function App() {
   const [token, setToken] = useState(() => localStorage.getItem('user-management-token'));
   const [currentUser, setCurrentUser] = useState(null);
-  const [authMode, setAuthMode] = useState('login');
-  const [authForm, setAuthForm] = useState({ name: '', email: '', password: '' });
+  const [authForm, setAuthForm] = useState({ email: '', password: '' });
   const [users, setUsers] = useState([]);
   const [activeSection, setActiveSection] = useState('overview');
   const [teamAccess, setTeamAccess] = useState(() => ({
@@ -116,16 +115,15 @@ function App() {
     setNotice('');
     setBusy(true);
     try {
-      const path = authMode === 'login' ? '/auth/login' : '/auth/register';
-      const data = await apiRequest(path, {
+      const data = await apiRequest('/auth/login', {
         method: 'POST',
         body: JSON.stringify(authForm)
       });
       localStorage.setItem('user-management-token', data.token);
       setCurrentUser(data.user);
       setToken(data.token);
-      setAuthForm({ name: '', email: '', password: '' });
-      setNotice(authMode === 'register' ? 'Account created. Welcome!' : 'You are signed in.');
+      setAuthForm({ email: '', password: '' });
+      setNotice('You are signed in.');
       if (data.user.role === 'admin') await loadUsers(data.token);
     } catch (requestError) {
       setError(requestError.message);
@@ -204,7 +202,7 @@ function App() {
     return (
       <main className="auth-page">
         <section className="auth-intro">
-          <div className="brand-mark">P</div>
+          <img className="brand-logo" src="/meat-logo.svg" alt="" />
           <span className="eyebrow">PREMIUM FRESH MEAT</span>
           <h1>Fresh quality. Trusted service.</h1>
           <p>A clear space to manage the customers, sellers, and riders who keep your business moving.</p>
@@ -212,33 +210,21 @@ function App() {
         </section>
         <section className="auth-panel">
           <div className="auth-card">
-            <div className="mobile-brand"><span className="brand-mark small">P</span> PREMIUM FRESH MEAT</div>
-            <p className="eyebrow">{authMode === 'login' ? 'WELCOME BACK' : 'GET STARTED'}</p>
-            <h2>{authMode === 'login' ? 'Sign in to your account' : 'Create your account'}</h2>
-            <p className="muted">{authMode === 'login' ? 'Enter your details below to continue.' : 'It only takes a moment to get set up.'}</p>
+            <div className="mobile-brand"><img className="brand-logo small" src="/meat-logo.svg" alt="" /> PREMIUM FRESH MEAT</div>
+            <p className="eyebrow">ADMINISTRATOR ACCESS</p>
+            <h2>Sign in to your account</h2>
+            <p className="muted">Enter your administrator credentials to continue.</p>
             {error && <div className="alert error" role="alert">{error}</div>}
             {notice && <div className="alert success" role="status">{notice}</div>}
             <form onSubmit={submitAuth} className="form-stack">
-              {authMode === 'register' && (
-                <label>Full name
-                  <input name="name" value={authForm.name} onChange={updateAuthField} autoComplete="name" maxLength="100" required />
-                </label>
-              )}
               <label>Email address
                 <input name="email" type="email" value={authForm.email} onChange={updateAuthField} autoComplete="email" maxLength="254" required />
               </label>
               <label>Password
-                <input name="password" type="password" value={authForm.password} onChange={updateAuthField} autoComplete={authMode === 'login' ? 'current-password' : 'new-password'} minLength="8" maxLength="72" required />
-                {authMode === 'register' && <span className="field-hint">Use at least 8 characters.</span>}
+                <input name="password" type="password" value={authForm.password} onChange={updateAuthField} autoComplete="current-password" minLength="8" maxLength="72" required />
               </label>
-              <button className="button primary full" disabled={busy}>{busy ? 'Please wait…' : authMode === 'login' ? 'Sign in' : 'Create account'} <span aria-hidden="true">→</span></button>
+              <button className="button primary full" disabled={busy}>{busy ? 'Please wait…' : 'Sign in'} <span aria-hidden="true">→</span></button>
             </form>
-            <p className="switch-mode">
-              {authMode === 'login' ? 'New to Premium Fresh Meat?' : 'Already have an account?'}{' '}
-              <button type="button" className="text-button" onClick={() => { setAuthMode(authMode === 'login' ? 'register' : 'login'); setError(''); setNotice(''); }}>
-                {authMode === 'login' ? 'Create an account' : 'Sign in'}
-              </button>
-            </p>
           </div>
           <footer className="auth-footer">Premium Fresh Meat · Quality you can trust.</footer>
         </section>
@@ -249,7 +235,7 @@ function App() {
   return (
     <div className="app-shell">
       <aside className="sidebar">
-        <a className="brand" href="#" aria-label="Premium Fresh Meat home"><span className="brand-mark">P</span><span>Premium <span className="brand-light">Fresh Meat</span></span></a>
+        <a className="brand" href="#" aria-label="Premium Fresh Meat home"><img className="brand-logo" src="/meat-logo.svg" alt="" /><span>Premium <span className="brand-light">Fresh Meat</span></span></a>
         <div className="nav-label">WORKSPACE</div>
         <button type="button" className={`nav-item ${activeSection === 'overview' ? 'active' : ''}`} onClick={() => setActiveSection('overview')} aria-current={activeSection === 'overview' ? 'page' : undefined}><span className="nav-icon">▦</span> Overview</button>
         {currentUser.role === 'admin' && <button type="button" className="nav-item" onClick={() => setActiveSection('overview')}><span className="nav-icon">♙</span> User accounts <span className="nav-count">{users.length}</span></button>}
