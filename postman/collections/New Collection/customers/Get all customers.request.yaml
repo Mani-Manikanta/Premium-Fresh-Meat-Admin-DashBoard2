@@ -1,0 +1,9 @@
+$kind: http-request
+name: Get all customers
+order: 1000
+method: GET
+url: '{{baseUrl}}/customers'
+auth:
+  type: bearer
+  credentials:
+    token: '{{token}}'

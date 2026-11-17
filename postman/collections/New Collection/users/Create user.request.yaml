@@ -1,0 +1,20 @@
+$kind: http-request
+name: Create user
+order: 3000
+method: POST
+url: '{{baseUrl}}/users'
+auth:
+  type: bearer
+  credentials:
+    token: '{{token}}'
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "name": "New User",
+      "email": "newuser@example.com",
+      "role": "user",
+      "password": "Password123!"
+    }

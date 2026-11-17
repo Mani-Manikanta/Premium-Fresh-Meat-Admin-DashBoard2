@@ -1,0 +1,9 @@
+$kind: http-request
+name: Get all users
+order: 1000
+method: GET
+url: '{{baseUrl}}/users'
+auth:
+  type: bearer
+  credentials:
+    token: '{{token}}'

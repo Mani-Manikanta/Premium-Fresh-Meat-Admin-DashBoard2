@@ -7,14 +7,14 @@ A beginner-friendly example of a React + Vite frontend, an Express REST API, and
 ```text
 Browser (React at http://localhost:5173)
   └── JSON over HTTP, with a Bearer token after login
-      └── Express API (http://localhost:4000/api)
+      └── Express API (http://localhost:5000/api)
           └── mysql2 connection pool
               └── MySQL database (user_management)
 ```
 
 The browser never connects directly to MySQL. The API validates requests, checks the JWT, hashes passwords, and runs parameterized SQL queries. Password hashes are never sent back by the API.
 
-The Customers, Sellers, and Riders pages in the dashboard are display-only previews populated with fictional sample records in `frontend/src/App.jsx`. The administrator profile uses the signed-in account; sales, revenue, and profit cards show illustrative demo figures only. These previews do not use the API or MySQL and are not editable or persistent. Administrators can allow or restrict team-member access to the Sellers and Riders preview pages from the overview. These access settings are saved in the current browser only; they are not shared across devices and do not replace server-side authorization for production data.
+The Customers, Sellers, and Riders pages show database records in searchable rows. Admins can add directory entries, open a person's full directory profile, approve or reject pending seller/rider applications, and suspend approved sellers/riders with a required, saved reason. Customer access can be approved or suspended. Customer, seller, and rider profiles support profile pictures; seller profiles also support license and rating information and a shop photo. Image uploads are limited to 750 KB each and stored in MySQL. The admin overview shows live directory totals, sample recent orders, and a recent-activity feed saved in the current browser. Its daily/weekly/monthly/yearly sales, revenue, and profit figures are illustrative; live orders and financial totals require an orders and payments source. Sellers/Riders page visibility switches remain browser-local and are not server-side access controls.
 
 ## 2. Project layout
 
@@ -54,7 +54,9 @@ postman/
 
 1. Start the MySQL server and open MySQL Workbench or a MySQL command-line client.
 2. Run `backend/sql/schema.sql`. It creates the `user_management` database, the `users` table, and three repeatable sample records. The schema script uses a bcrypt hash for the documented sample admin password.
-3. Keep the database user/password private; do not put real credentials in source control.
+3. After the seller, rider, and customer tables are set up, run `backend/sql/directory_profiles_migration.sql` once to add approval, rating, and image fields (including customer profile pictures) required by the updated API.
+4. Run `backend/sql/seller_rider_suspension_migration.sql` once to add the suspended approval state and saved suspension reasons for sellers and riders.
+5. Keep the database user/password private; do not put real credentials in source control.
 
 The sample accounts are:
 
@@ -84,7 +86,7 @@ npm install
 npm run dev
 ```
 
-The server listens on `http://localhost:4000`. Check `http://localhost:4000/api/health` for a status response. The first request that uses MySQL will also reveal connection/configuration errors in the backend terminal.
+The server listens on `http://localhost:5000`. Check `http://localhost:5000/api/health` for a status response. The first request that uses MySQL will also reveal connection/configuration errors in the backend terminal.
 
 ## 6. Run the frontend
 
@@ -112,6 +114,12 @@ All request and response bodies use JSON. The collection in `postman/user-manage
 | `POST` | `/api/users` | Administrator | Create a user |
 | `PUT` | `/api/users/:id` | Administrator | Update name, email, role, or password |
 | `DELETE` | `/api/users/:id` | Administrator | Delete a user |
+| `GET` / `POST` | `/api/sellers` | Administrator | List or add sellers |
+| `PUT` | `/api/sellers/:id` | Administrator | Update seller profile or approval |
+| `GET` / `POST` | `/api/riders` | Administrator | List or add riders |
+| `PUT` | `/api/riders/:id` | Administrator | Update rider profile or approval |
+| `GET` / `POST` | `/api/customers` | Administrator | List or add customers |
+| `PUT` | `/api/customers/:id` | Administrator | Approve or suspend a customer |
 
 For protected routes, copy the `token` from the login response into the Postman collection's `token` collection variable. Postman then sends `Authorization: Bearer <token>`. To create a user as an administrator, send:
 
@@ -141,11 +149,12 @@ The API uses MySQL unique constraints as the final guard against duplicate email
 - `backend/src/server.js` checks required environment variables before listening, then tests the database connection.
 - `backend/src/app.js` configures JSON parsing, CORS, routes, not-found responses, and a centralized error handler.
 - `backend/src/config/db.js` creates a reusable `mysql2/promise` pool. Queries use placeholders rather than concatenating user input into SQL.
-- `backend/src/routes/auth.js` validates registration/login, hashes new passwords with `bcryptjs`, compares hashes at login, and signs a time-limited JWT.
+- `backend/src/routes/auth.js` verifies login credentials, compares password hashes, and signs a time-limited JWT.
 - `backend/src/middleware/auth.js` verifies Bearer tokens and separates authenticated users from administrators.
 - `backend/src/routes/users.js` implements CRUD. Its shared field selection omits `password_hash`; provided passwords are re-hashed before storage.
+- `backend/src/routes/sellers.js` and `backend/src/routes/riders.js` implement admin-only directory CRUD, approval status, ratings, license numbers, and uploaded image fields.
 - `frontend/src/api.js` adds the JSON and authorization headers and converts API errors into messages for the UI.
-- `frontend/src/App.jsx` provides login/registration, admin dashboard counts, user details, and forms for all four CRUD operations.
+- `frontend/src/App.jsx` provides administrator login, directory management, user details, and seller/rider/customer creation forms.
 - `backend/sql/schema.sql` is safe to re-run for creating the database/table. Its sample inserts do nothing when the sample emails already exist.
 
 ## 10. Troubleshooting
@@ -153,7 +162,7 @@ The API uses MySQL unique constraints as the final guard against duplicate email
 - **MySQL connection refused:** Start the MySQL service and verify `DB_HOST` and `DB_PORT` in `backend/.env`.
 - **Access denied:** Verify the `.env` user/password and that the MySQL user has privileges on `user_management`.
 - **Unknown database/table:** Run `backend/sql/schema.sql` against the same MySQL server configured in `.env`.
-- **Browser CORS error:** Keep the Vite origin at `http://localhost:5173`, or update `CLIENT_URL` in `backend/.env` to the actual frontend origin, then restart the API.
+- **Browser CORS error:** The API allows both `http://localhost:5173` and `http://127.0.0.1:5173` for local development. For another frontend origin, set `CLIENT_URL` in `backend/.env` and restart the API.
 - **JWT secret missing:** Set `JWT_SECRET` in `backend/.env` and restart the backend.
 - **Port already in use:** Stop the other local service using that port or change `PORT` in `backend/.env` (and `VITE_API_URL` in the frontend environment if the API port changes).
 

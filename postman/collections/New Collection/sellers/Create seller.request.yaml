@@ -1,0 +1,23 @@
+$kind: http-request
+name: Create seller
+order: 3000
+method: POST
+url: '{{baseUrl}}/sellers'
+auth:
+  type: bearer
+  credentials:
+    token: '{{token}}'
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "shop_name": "Fresh Meats Ltd",
+      "contact_name": "Jane Smith",
+      "email": "jane@freshmeats.com",
+      "category": "Poultry",
+      "shop_address": "45 Market Street",
+      "meat_types": ["Chicken", "Lamb"],
+      "status": "Active"
+    }

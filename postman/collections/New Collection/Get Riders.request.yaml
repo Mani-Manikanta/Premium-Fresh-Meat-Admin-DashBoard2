@@ -1,0 +1,9 @@
+$kind: http-request
+name: Get Riders
+order: 2000
+method: GET
+url: '{{baseUrl}}/riders'
+auth:
+  type: bearer
+  credentials:
+    token: '{{token}}'
